@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_giavu/model/argument.dart';
-import 'package:flutter_giavu/screens/list.dart';
+import 'package:flutter_giavu/screens/list.student.dart';
 
 import '../utils.dart';
 
@@ -18,43 +18,48 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: Stack(
+          alignment: AlignmentDirectional.topCenter,
           children: [
             const HomeBackground(),
             const HomeTitle(),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ButtonNav(
-                    fixedSize: MaterialStateProperty.all(
-                      Size(size.width * 0.9, size.height * 0.065)
-                    ),
-                    textStyle: MaterialStateProperty.all(
-                      PrimaryFont.medium(size.height * 0.03)
-                    ),
-                    content: 'CREATE NEW',
-                    route: '/add',
-                    args: Argument(),
-                  ),
-                  const SizedBox(height: 20,),
-                  ButtonNav(
-                    fixedSize: MaterialStateProperty.all(
-                      Size(size.width * 0.9, size.height * 0.065)
-                    ),
-                    textStyle: MaterialStateProperty.all(
-                      PrimaryFont.medium(size.height * 0.03)
-                    ),
-                    content: 'VIEW ALL',
-                    route: '$ListScreen',
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ButtonNav(
+                        fixedSize: MaterialStateProperty.all(
+                          Size(size.width * 0.44, size.height * 0.07)
+                        ),
+                        textStyle: MaterialStateProperty.all(
+                          PrimaryFont.medium(size.height * 0.025)
+                        ),
+                        content: 'CREATE',
+                        route: '/add',
+                        args: Argument(),
+                      ),
+                      ButtonNav(
+                        fixedSize: MaterialStateProperty.all(
+                          Size(size.width * 0.44, size.height * 0.07)
+                        ),
+                        textStyle: MaterialStateProperty.all(
+                          PrimaryFont.medium(size.height * 0.025)
+                        ),
+                        content: 'VIEW ALL',
+                        route: '$ListAllScreen',
+                      )
+                    ],
                   )
                 ],
               ),
             )
           ],
         ),
-      ),
+      )
     );
   }
 }
@@ -67,8 +72,8 @@ class HomeBackground extends StatelessWidget {
     return Align(
       alignment: Alignment.center,
       child: FractionallySizedBox(
-        heightFactor: 0.4,
-        widthFactor: 1,
+        heightFactor: 0.3,
+        widthFactor: 0.8,
         child: FittedBox(
           fit: BoxFit.contain,
           alignment: Alignment.topCenter,
@@ -88,25 +93,25 @@ class HomeTitle extends StatelessWidget {
     return FractionallySizedBox(
       heightFactor: 0.35,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             const Spacer(flex: 1,),
             Flexible(
               fit: FlexFit.tight,
               flex: 3,
+              
               child: RichText(
-                textAlign: TextAlign.start,
                 text: TextSpan(
-                    text: 'Branches management',
-                    style: PrimaryFont.medium(35).copyWith(
+                    text: 'STUDENT MANAGEMENT',
+                    style: PrimaryFont.medium(40).copyWith(
                       color: kPrimaryColor,
                       height: 1.5
                     ),
                     children: [
                       TextSpan(
-                        text: '\nDev by: Dang Le Gia Vu',
+                        text: '\nAuthor: Tran Luan Hy',
                         style: PrimaryFont.regular(20).copyWith(
                         color: kPrimaryColor
                       )

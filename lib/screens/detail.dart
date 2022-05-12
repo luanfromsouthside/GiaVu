@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_giavu/model/branch.model.dart';
+import 'package:flutter_giavu/model/student.model.dart';
 import 'package:flutter_giavu/utils.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,52 +12,43 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  late Branch branch;
+  late Student student;
 
   makeCall() async {
-    await launch('tel:${branch.phone}');
+    await launch('tel:${student.phone}');
   }
 
   mailTo() async {
-    await launch('mailto:${branch.mail}?subject=Subject mail&body=Body mail');
+    await launch('mailto:${student.mail}?subject=Subject mail&body=Body mail');
   }
 
   getMap() async {
-    await launch('https://www.google.com/maps/place/${branch.address}');
+    await launch('https://www.google.com/maps/place/${student.address}');
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    branch = ModalRoute.of(context)?.settings.arguments as Branch;
+    student = ModalRoute.of(context)?.settings.arguments as Student;
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = context.screenSize;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Details Branch #${branch.id}',
+        title: Text('Details Student #${student.id}',
+          style: PrimaryFont.medium(20).copyWith(
+            color: kDarkColor
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: kDarkColor,
+          onPressed: () => Navigator.of(context).pop(),
         ),
         centerTitle: true,
-        backgroundColor: kPrimaryColor,
-        actions: [
-          PopupMenuButton<int>(
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: const Text('Make call'),
-                onTap: makeCall
-              ),
-              PopupMenuItem(
-                child: const Text('Mail to'),
-                onTap: mailTo
-              ),
-              PopupMenuItem(
-                child: const Text('Location'),
-                onTap: getMap
-              ),
-            ],
-          )
-        ],
+        backgroundColor: Colors.white,
       ),
       resizeToAvoidBottomInset: false,
       body: Align(
@@ -67,42 +58,44 @@ class _DetailScreenState extends State<DetailScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 20,),
-                const Image(
-                  image: AssetImage('assets/images/detail_bg.png'),
+                Image(
+                  image: const AssetImage('assets/images/avt_man.png'),
                   fit: BoxFit.fitWidth,
+                  height: size.height * 0.2,
                 ),
                 const SizedBox(height: 10,),
                 DetailItem(
-                  title: 'Branch name: ${branch.name}', 
+                  title: 'Student name: ${student.name}', 
                   icon: Icons.store
                 ),
                 DetailItem(
-                  title: branch.phone, 
+                  title: 'Gender: ${student.gender == 'Male' ? 'Male':'Female'}', 
+                  icon: student.gender == 'Male' ? Icons.man : Icons.woman
+                ),
+                DetailItem(
+                  title: student.birth, 
+                  icon: Icons.cake
+                ),
+                DetailItem(
+                  title: student.phone, 
                   icon: Icons.phone,
                   onTap: makeCall,
                 ),
                 DetailItem(
-                  title: branch.mail, 
+                  title: student.mail, 
                   icon: Icons.mail,
                   onTap: mailTo,
                 ),
                 DetailItem(
-                  title: branch.address, 
-                  icon: Icons.map,
+                  title: 'School year: ${student.schoolYear}', 
+                  icon: Icons.school,
+                ),
+                DetailItem(
+                  title: student.address, 
+                  icon: Icons.pin_drop,
                   onTap: getMap,
                 ),
-                DetailItem(
-                  title: 'Branch manager: ${branch.manager}', 
-                  icon: Icons.contacts
-                ),
-                DetailItem(
-                  title: 'Status: ${branch.isPublish == 'True' ? 'Open':'Close'}', 
-                  icon: branch.isPublish == 'True' ? Icons.event_available : Icons.event_busy
-                ),
-                DetailItem(
-                  title: 'Description:', 
-                  sub: branch.description,
-                  icon: Icons.description)
+                
               ],
             ),
           ),
@@ -128,21 +121,33 @@ class DetailItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: Card(
-        elevation: 0.8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30)
+      padding: const EdgeInsets.all(8),
+      child: TextButton(
+        onPressed: onTap,
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(const Color(0xFFf8fdff)),
+          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25)
+          )),
+          elevation: MaterialStateProperty.all(4)
         ),
-        color: const Color(0xFFF3E5F5),
-        child: ListTile(
-          title: Text(
-            title,
-            style: PrimaryFont.medium(18),
-          ),
-          subtitle: sub == null ? null : Text(sub!),
-          leading: Icon(icon),
-          onTap: onTap,
+        child: Row(
+          children: [
+            const SizedBox(width: 10,),
+            Icon(
+              icon, 
+              size: 30,
+              color: kDarkColor
+            ),
+            const SizedBox(width: 20,),
+            Expanded(
+              child: Text(title,
+                style: PrimaryFont.medium(16).copyWith(
+                  color: kDarkColor
+                ),
+              )
+            ),
+          ],
         ),
       ),
     );

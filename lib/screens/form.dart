@@ -1,10 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_giavu/model/argument.dart';
-import 'package:flutter_giavu/model/branch.model.dart';
-import 'package:flutter_giavu/screens/list.dart';
+import 'package:flutter_giavu/model/student.model.dart';
+import 'package:flutter_giavu/screens/list.student.dart';
 import 'package:flutter_giavu/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class FormScreen extends StatefulWidget {
   const FormScreen({ Key? key }) : super(key: key);
@@ -14,17 +15,17 @@ class FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<FormScreen> {
-  late Branch branch;
-  late String formName = 'ADD NEW BRANCH';
+  late Student student;
+  late String formName = 'ADD NEW STUDENT';
   late Argument args = Argument();
   final formKey = GlobalKey<FormState>();
   final TextEditingController _name = TextEditingController();
   final TextEditingController _phone = TextEditingController();
   final TextEditingController _mail = TextEditingController();
   final TextEditingController _address = TextEditingController();
-  final TextEditingController _manager = TextEditingController();
-  final TextEditingController _isPublish = TextEditingController(text: 'True');
-  final TextEditingController _description = TextEditingController();
+  final TextEditingController _gender = TextEditingController(text: 'Female');
+  final TextEditingController _birth = TextEditingController();
+  final TextEditingController _schoolYear = TextEditingController();
 
   setValueField(String value, TextEditingController controller) {
     controller.value = TextEditingValue(
@@ -33,13 +34,13 @@ class _FormScreenState extends State<FormScreen> {
     );
   }
 
-  initValue(Branch branch) {
-    setValueField(branch.name, _name);
-    setValueField(branch.phone, _phone);
-    setValueField(branch.mail, _mail);
-    setValueField(branch.address, _address);
-    setValueField(branch.manager, _manager);
-    setValueField(branch.description, _description);
+  initValue(Student student) {
+    setValueField(student.name, _name);
+    setValueField(student.phone, _phone);
+    setValueField(student.mail, _mail);
+    setValueField(student.address, _address);
+    setValueField(student.birth, _birth);
+    setValueField(student.schoolYear, _schoolYear);
   }
 
   @override
@@ -48,12 +49,12 @@ class _FormScreenState extends State<FormScreen> {
     Future.delayed(Duration.zero, () {
       args = ModalRoute.of(context)?.settings.arguments as Argument;
       if(args.isUpdate) {
-        branch = args.branch!;
-        initValue(branch);
-        if(branch.isPublish != 'True' && branch.isPublish == 'False') {
-          _isPublish.text = 'False';
+        student = args.student!;
+        initValue(student);
+        if(student.gender != 'Female' && student.gender == 'Male') {
+          _gender.text = 'Male';
         }
-        formName = 'UPDATE BRANCH';
+        formName = 'UPDATE STUDENT #${student.id}';
       }
       setState(() {});
     });
@@ -66,9 +67,9 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   Future<void> add() async {
-    var res = await http.get(Uri.parse('http://api.phanmemquocbao.com/api/Doituong/InsertObjects?p0=${_name.text}&id=1&p1=${_address.text}&p2=${_phone.text}&p3=${_mail.text}&p4=${_manager.text}&p5=${_isPublish.text}&p6=${_description.text}&tokenin=lethibaotran'));
+    var res = await http.get(Uri.parse('http://api.phanmemquocbao.com/api/Doituong/InsertObjects?p0=${_name.text}&id=1&p1=${_gender.text}&p2=${_birth.text}&p3=${_phone.text}&p4=${_mail.text}&p5=${_address.text}&p6=${_schoolYear.text}&tokenin=lethibaotran'));
     if(res.statusCode == 200) {
-      Navigator.of(context).popAndPushNamed('$ListScreen');
+      Navigator.of(context).popAndPushNamed('$ListAllScreen');
     }
     else {
       CustomDialog.makeDialog(
@@ -86,7 +87,7 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   Future<void> update() async {
-    var res = await http.get(Uri.parse('http://api.phanmemquocbao.com/api/Doituong/updateObjects?id=${branch.id}&p0=${_name.text}&p1=${_address.text}&p2=${_phone.text}&p3=${_mail.text}&p4=${_manager.text}&p5=${_isPublish.text}&p6=${_description.text}&tokenup=lethibaotran'));
+    var res = await http.get(Uri.parse('http://api.phanmemquocbao.com/api/Doituong/updateObjects?id=${student.id}&p0=${_name.text}&p1=${_gender.text}&p2=${_birth.text}&p3=${_phone.text}&p4=${_mail.text}&p5=${_address.text}&p6=${_schoolYear.text}&tokenup=lethibaotran'));
     if(res.statusCode == 200) {
       Navigator.of(context).pop();
     }
@@ -110,18 +111,18 @@ class _FormScreenState extends State<FormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(formName,
-          style: const TextStyle(color: kPrimaryColor),
+          style: const TextStyle(color: kDarkColor),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: kPrimaryColor,),
+          icon: const Icon(Icons.arrow_back, color: kDarkColor,),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
             onPressed: submit, 
-            icon: const Icon(Icons.save, color: kPrimaryColor,)
+            icon: const Icon(Icons.download, color: kDarkColor,)
           )
         ],
       ),
@@ -147,18 +148,66 @@ class _FormScreenState extends State<FormScreen> {
                         'Please enter valid name' : null,
                     ),
                     const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text('Gender',
+                          style: PrimaryFont.regular(16),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: ListTile(
+                            title: const Text('Female'),
+                            leading: Radio(
+                              groupValue: _gender.text,
+                              value: 'Female',
+                              onChanged: (value) {
+                                setState(() {
+                                  _gender.text = value.toString();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: ListTile(
+                            title: const Text('Male'),
+                            leading: Radio(
+                              groupValue: _gender.text,
+                              value: 'Male',
+                              onChanged: (value) {
+                                setState(() {
+                                  _gender.text = value.toString();
+                                });
+                              },
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
                     customInputField(
-                      label: 'Address', 
-                      hint: 'Location of branch',
-                      controller: _address,
-                      validator: (value) =>
-                        (value!.isEmpty || value.length > 100) ?
-                        'Please enter valid address' : null,
+                      label: 'Birth', 
+                      hint: 'Birth of student',
+                      controller: _birth,
+                      enable: false,
+                      validator: (value) => value!.isEmpty ? 'Birth is not empty' : null,
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context, 
+                          initialDate: DateTime(2000), 
+                          firstDate: DateTime(1900), 
+                          lastDate: DateTime.now()
+                        );
+                        if(date != null) {
+                          _birth.text = DateFormat('dd/MM/yyyy').format(date);
+                        }
+                      }
                     ),
                     const SizedBox(height: 10),
                     customInputField(
                       label: 'Phone', 
-                      hint: 'Phone number of branch',
+                      hint: 'Phone number of student',
                       controller: _phone,
                       validator: (value) {
                         RegExp regex = RegExp(r'(84|0[3|5|7|8|9])+([0-9]{8})\b');
@@ -174,7 +223,7 @@ class _FormScreenState extends State<FormScreen> {
                     const SizedBox(height: 10),
                     customInputField(
                       label: 'Mail', 
-                      hint: 'Mail of branch',
+                      hint: 'Mail of student',
                       controller: _mail,
                       validator: (value) {
                         if(!EmailValidator.validate(value.toString()) || value!.length > 100) {
@@ -188,60 +237,27 @@ class _FormScreenState extends State<FormScreen> {
                     ),
                     const SizedBox(height: 10),
                     customInputField(
-                      label: 'Manager', 
-                      hint: 'Manager name of branch',
-                      controller: _manager,
-                      validator: (value) =>
-                        (value!.isEmpty || value.length > 100) ?
-                        'Please enter valid name' : null,
+                      label: 'School year', 
+                      hint: 'Enter school year',
+                      controller: _schoolYear,
+                      validator: (value) {
+                        if(value!.isEmpty || value.length > 100) {
+                          return "Please enter valid school year";
+                        }
+                        else {
+                          return null;
+                        }
+                      },
                     ),
                     const SizedBox(height: 10),
                     customInputField(
-                      label: 'Description', 
-                      hint: 'Description of branch',
-                      controller: _description,
+                      label: 'Address', 
+                      hint: 'Address of student',
+                      controller: _address,
                       validator: (value) =>
-                        (value!.length > 100) ?
-                        'Please enter valid description' : null,
+                        (value!.isEmpty || value.length > 100) ?
+                        'Please enter valid address' : null,
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Text('Is Publish',
-                          style: PrimaryFont.regular(16),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: ListTile(
-                            title: const Text('True'),
-                            leading: Radio(
-                              groupValue: _isPublish.text,
-                              value: 'True',
-                              onChanged: (value) {
-                                setState(() {
-                                  _isPublish.text = value.toString();
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: ListTile(
-                            title: const Text('False'),
-                            leading: Radio(
-                              groupValue: _isPublish.text,
-                              value: 'False',
-                              onChanged: (value) {
-                                setState(() {
-                                  _isPublish.text = value.toString();
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      ],
-                    )
                   ],
                 ),
               ),
@@ -269,6 +285,7 @@ class _FormScreenState extends State<FormScreen> {
     decoration: InputDecoration(
       labelText: label,
       hintText: hint,
+      border: const OutlineInputBorder()
     ),
     keyboardType: type,
     validator: validator,

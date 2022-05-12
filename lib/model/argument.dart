@@ -1,11 +1,11 @@
-import 'package:flutter_giavu/model/branch.model.dart';
+import 'package:flutter_giavu/model/student.model.dart';
 
 class Argument {
   bool isUpdate;
-  Branch? branch;
+  Student? student;
 
   Argument({
     this.isUpdate = false,
-    this.branch
+    this.student
   });
 }

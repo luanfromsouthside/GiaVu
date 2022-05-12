@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_giavu/screens/detail.dart';
 import 'package:flutter_giavu/screens/form.dart';
 import 'package:flutter_giavu/screens/home.dart';
-import 'package:flutter_giavu/screens/list.dart';
+import 'package:flutter_giavu/screens/list.student.dart';
 import 'package:flutter_giavu/utils.dart';
 
 void main() {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         '$HomeScreen':(context) => const HomeScreen(),
         '/add':(context) => const FormScreen(),
         '/update':(context) => const FormScreen(),
-        '$ListScreen': (context) => const ListScreen(),
+        '$ListAllScreen': (context) => const ListAllScreen(),
         '$DetailScreen': (context) => const DetailScreen()
       },
     );
